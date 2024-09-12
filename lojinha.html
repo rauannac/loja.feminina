@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Roupas Femininas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #ff69b4;
+            padding: 1rem 2rem;
+            border-bottom: 5px solid #f06292;
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #fff;
+            margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar .btn {
+            background-color: #333;
+            color: #fff;
+            border-radius: 50px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            margin-top: 1.5rem;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card img {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            background-color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .card-text {
+            font-size: 1.2rem;
+            color: #ff69b4;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: #ff69b4;
+            border-color: #ff69b4;
+        }
+
+        .btn-primary:hover {
+            background-color: #f06292;
+            border-color: #f06292;
+        }
+
+        footer {
+            background-color: #ff69b4;
+            padding: 20px;
+            color: #fff;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <span class="navbar-brand">Loja Feminina</span>
+            <button class="btn btn-outline-light" onclick="verCarrinho()">Ver Carrinho <i class="bi bi-cart"></i></button>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Vestidos</h2>
+        <div id="produtos-vestidos" class="row"></div>
+    </div>
+
+    <div class="container mt-4">
+        <h2>Croppeds</h2>
+        <div id="produtos-croppeds" class="row"></div>
+    </div>
+
+    <!-- Modal Carrinho -->
+    <div class="modal fade" id="modalCarrinho" tabindex="-1" aria-labelledby="modalCarrinhoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCarrinhoLabel">Carrinho de Compras</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="carrinho-items-modal"></tbody>
+                    </table>
+                    <p id="total-preco-modal"><strong>Total: R$ 0,00</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="finalizarCompra()">Finalizar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Loja Feminina. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const produtosDB = [
+            {
+                id: 1,
+                categoria: 'vestidos',
+                nome: 'Vestido Florido',
+                preco: 120.00,
+                img: 'https://img.ltwebstatic.com/images3_pi/2023/01/09/16732462965335150e97eeb61b3f98929417cc63fe_thumbnail_720x.jpg',
+                descricao: 'Vestido florido, ideal para eventos ao ar livre.',
+                tamanhos: 'P, M, G',
+                material: 'Algodão'
+            },
+            {
+                id: 2,
+                categoria: 'vestidos',
+                nome: 'Vestido de Festa',
+                preco: 250.00,
+                img: 'https://img.ltwebstatic.com/images3_spmp/2024/01/15/fc/17053004151f44019316d09c19f143d874d40953bc_thumbnail_720x.jpg',
+                descricao: 'Vestido elegante para festas e eventos formais.',
+                tamanhos: 'P, M, G',
+                material: 'Seda'
+            },
+            {
+                id: 3,
+                categoria: 'vestidos',
+                nome: 'Vestido Casual',
+                preco: 90.00,
+                img: 'https://http2.mlstatic.com/D_NQ_NP_970065-MLB50210028805_062022-O.webp',
+                descricao: 'Vestido casual, perfeito para o dia a dia.',
+                tamanhos: 'P, M, G',
+                material: 'Poliéster'
+            },
+            {
+                id: 4,
+                categoria: 'croppeds',
+                nome: 'Cropped Estampado',
+                preco: 60.00,
+                img: 'https://img.ltwebstatic.com/images3_spmp/2023/06/20/1687206670be1f9d6296acb92f0129e0d053f75bea_thumbnail_720x.jpg',
+                descricao: 'Cropped estampado, ideal para compor looks modernos.',
+                tamanhos: 'P, M, G',
+                material: 'Algodão e Elastano'
+            },
+            {
+                id: 5,
+                categoria: 'croppeds',
+                nome: 'Cropped Social',
+                preco: 80.00,
+                img: 'https://img.ltwebstatic.com/images3_spmp/2023/08/14/1c/1692021637756258f4ac4deb481f34ce5b69990f85_thumbnail_720x.jpg',
+                descricao: 'Cropped social, perfeito para ocasiões formais e informais.',
+                tamanhos: 'P, M, G',
+                material: 'Poliéster e Elastano'
+            },
+            {
+                id: 6,
+                categoria: 'croppeds',
+                nome: 'Cropped Casual',
+                preco: 45.00,
+                img: 'https://img.ltwebstatic.com/images3_pi/2023/06/06/168603699053ac7802526b40919998d4f9e4d3f1a1_thumbnail_720x.jpg',
+                descricao: 'Cropped casual, ideal para looks descontraídos.',
+                tamanhos: 'P, M, G',
+                material: 'Algodão'
+            }
+        ];
+
+        function buscarProdutos() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(produtosDB);
+                }, 500);
+            });
+        }
+
+        buscarProdutos().then(produtos => {
+            produtos.forEach(produto => {
+                criarCardProduto(produto);
+            });
+        });
+
+        function criarCardProduto(produto) {
+            const cardHTML = `
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="${produto.img}" class="card-img-top" alt="${produto.nome}">
+                        <div class="card-body">
+                            <h5 class="card-title">${produto.nome}</h5>
+                            <p class="card-text">R$ ${produto.preco.toFixed(2)}</p>
+                            <button class="btn btn-primary" onclick="adicionarAoCarrinho(${produto.id})">Adicionar ao Carrinho</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById(`produtos-${produto.categoria}`).innerHTML += cardHTML;
+        }
+
+        let carrinho = [];
+
+        function adicionarAoCarrinho(idProduto) {
+            const produto = produtosDB.find(p => p.id === idProduto);
+            carrinho.push(produto);
+            alert(`${produto.nome} foi adicionado ao carrinho!`);
+        }
+
+        function verCarrinho() {
+            const modalItems = document.getElementById('carrinho-items-modal');
+            modalItems.innerHTML = '';
+
+            let total = 0;
+
+            carrinho.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.nome}</td>
+                        <td>R$ ${item.preco.toFixed(2)}</td>
+                    </tr>
+                `;
+                modalItems.innerHTML += row;
+                total += item.preco;
+            });
+
+            document.getElementById('total-preco-modal').innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
+            const modal = new bootstrap.Modal(document.getElementById('modalCarrinho'));
+            modal.show();
+        }
+
+        function finalizarCompra() {
+            alert('Compra finalizada!');
+            carrinho = [];
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalCarrinho'));
+            modal.hide();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
